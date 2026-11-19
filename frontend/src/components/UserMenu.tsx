@@ -1,15 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Dropdown, Avatar, Space, Typography, message, Modal, Form, Input, Button } from 'antd';
-import { UserOutlined, LogoutOutlined, TeamOutlined, CrownOutlined, LockOutlined } from '@ant-design/icons';
+import {
+  UserOutlined,
+  LogoutOutlined,
+  TeamOutlined,
+  CrownOutlined,
+  LockOutlined,
+  GlobalOutlined,
+} from '@ant-design/icons';
 import { authApi } from '../services/api';
 import type { User } from '../types';
 import type { MenuProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import type { LanguageCode } from '../i18n';
 
 const { Text } = Typography;
 
 export default function UserMenu() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [changePasswordForm] = Form.useForm();
@@ -24,44 +34,68 @@ export default function UserMenu() {
       const user = await authApi.getCurrentUser();
       setCurrentUser(user);
     } catch (error) {
-      console.error('获取用户信息失败:', error);
+      console.error('Failed to load current user:', error);
+    }
+  };
+
+  const handleChangeLanguage = async (language: LanguageCode) => {
+    try {
+      await authApi.setPreferredLanguage(language);
+      await i18n.changeLanguage(language);
+      setCurrentUser((previous) =>
+        previous ? { ...previous, preferred_language: language } : previous
+      );
+      message.success(t('userMenu.languageSaved'));
+    } catch (error) {
+      console.error('Failed to update interface language:', error);
+      message.error(t('userMenu.languageSaveFailed'));
+    }
+  };
+
+  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+    if (key.startsWith('language:')) {
+      const language = key.slice('language:'.length) as LanguageCode;
+      if (language === 'id' || language === 'en' || language === 'zh-CN') {
+        void handleChangeLanguage(language);
+      }
     }
   };
 
   const handleLogout = async () => {
     try {
       await authApi.logout();
-      message.success('已退出登录');
+      message.success(t('userMenu.logoutSuccess'));
       window.location.href = '/login';
     } catch (error) {
-      console.error('退出登录失败:', error);
-      message.error('退出登录失败');
+      console.error('Logout failed:', error);
+      message.error(t('userMenu.logoutFailed'));
     }
   };
 
   const handleShowUserManagement = () => {
     if (!currentUser?.is_admin) {
-      message.warning('只有管理员可以访问用户管理');
+      message.warning(t('userMenu.adminOnly'));
       return;
     }
     navigate('/user-management');
   };
 
-  const handleChangePassword = async (values: { oldPassword: string; newPassword: string }) => {
+  const handleChangePassword = async (values: { newPassword: string }) => {
     try {
       setChangingPassword(true);
       await authApi.setPassword(values.newPassword);
-      message.success('密码修改成功');
+      message.success(t('userMenu.passwordChangeSuccess'));
       setShowChangePassword(false);
       changePasswordForm.resetFields();
     } catch (error: any) {
-      console.error('修改密码失败:', error);
-      message.error(error.response?.data?.detail || '修改密码失败');
+      console.error('Password update failed:', error);
+      message.error(error.response?.data?.detail || t('userMenu.passwordChangeFailed'));
     } finally {
       setChangingPassword(false);
     }
   };
 
+  const activeLanguage = currentUser?.preferred_language || 'id';
   const menuItems: MenuProps['items'] = [
     {
       key: 'user-info',
@@ -70,40 +104,44 @@ export default function UserMenu() {
           <Text strong>{currentUser?.display_name || currentUser?.username}</Text>
           <br />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Trust Level: {currentUser?.trust_level}
-            {currentUser?.is_admin && ' · 管理员'}
+            {t('userMenu.trustLevel')}: {currentUser?.trust_level}
+            {currentUser?.is_admin && ' · ' + t('userMenu.administrator')}
           </Text>
         </div>
       ),
       disabled: true,
     },
-    {
-      type: 'divider',
-    },
+    { type: 'divider' },
     ...(currentUser?.is_admin ? [
       {
         key: 'user-management',
         icon: <TeamOutlined />,
-        label: '用户管理',
+        label: t('userMenu.userManagement'),
         onClick: handleShowUserManagement,
       },
-      {
-        type: 'divider' as const,
-      }
+      { type: 'divider' as const },
     ] : []),
+    {
+      key: 'language',
+      icon: <GlobalOutlined />,
+      label: t('userMenu.language'),
+      children: [
+        { key: 'language:id', label: (activeLanguage === 'id' ? '✓ ' : '') + t('languages.id') },
+        { key: 'language:en', label: (activeLanguage === 'en' ? '✓ ' : '') + t('languages.en') },
+        { key: 'language:zh-CN', label: (activeLanguage === 'zh-CN' ? '✓ ' : '') + t('languages.zhCN') },
+      ],
+    },
     {
       key: 'change-password',
       icon: <LockOutlined />,
-      label: '修改密码',
+      label: t('userMenu.changePassword'),
       onClick: () => setShowChangePassword(true),
     },
-    {
-      type: 'divider',
-    },
+    { type: 'divider' },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: '退出登录',
+      label: t('userMenu.logout'),
       onClick: handleLogout,
     },
   ];
@@ -114,7 +152,7 @@ export default function UserMenu() {
 
   return (
     <>
-      <Dropdown menu={{ items: menuItems }} placement="bottomRight">
+      <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} placement="bottomRight">
         <div
           style={{
             cursor: 'pointer',
@@ -122,7 +160,7 @@ export default function UserMenu() {
             alignItems: 'center',
             gap: 12,
             padding: '8px 16px',
-            background: 'rgba(255, 255, 255, 0.6)', // 保持半透明以配合 Backdrop
+            background: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
             borderRadius: 24,
@@ -131,7 +169,7 @@ export default function UserMenu() {
             boxShadow: 'var(--shadow-card)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--color-bg-container)'; // 悬浮时变实
+            e.currentTarget.style.background = 'var(--color-bg-container)';
             e.currentTarget.style.transform = 'translateY(-2px)';
             e.currentTarget.style.boxShadow = 'var(--shadow-elevated)';
           }}
@@ -184,14 +222,16 @@ export default function UserMenu() {
               fontSize: 12,
               lineHeight: '18px',
             }}>
-              {currentUser.is_admin ? '👑 管理员' : `🎖️ Trust Level ${currentUser.trust_level}`}
+              {currentUser.is_admin
+                ? '👑 ' + t('userMenu.administrator')
+                : '🎖️ ' + t('userMenu.trustLevel') + ' ' + currentUser.trust_level}
             </Text>
           </Space>
         </div>
       </Dropdown>
 
       <Modal
-        title="修改密码"
+        title={t('userMenu.changePassword')}
         open={showChangePassword}
         onCancel={() => {
           setShowChangePassword(false);
@@ -208,39 +248,39 @@ export default function UserMenu() {
           autoComplete="off"
         >
           <Form.Item
-            label="新密码"
+            label={t('userMenu.newPassword')}
             name="newPassword"
             rules={[
-              { required: true, message: '请输入新密码' },
-              { min: 6, message: '密码至少6个字符' },
+              { required: true, message: t('userMenu.newPasswordRequired') },
+              { min: 6, message: t('userMenu.passwordMin') },
             ]}
           >
             <Input.Password
               prefix={<LockOutlined />}
-              placeholder="请输入新密码（至少6个字符）"
+              placeholder={t('userMenu.newPasswordPlaceholder')}
               autoComplete="new-password"
             />
           </Form.Item>
 
           <Form.Item
-            label="确认密码"
+            label={t('userMenu.confirmPassword')}
             name="confirmPassword"
             dependencies={['newPassword']}
             rules={[
-              { required: true, message: '请确认新密码' },
+              { required: true, message: t('userMenu.confirmPasswordRequired') },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue('newPassword') === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error('两次输入的密码不一致'));
+                  return Promise.reject(new Error(t('userMenu.passwordMismatch')));
                 },
               }),
             ]}
           >
             <Input.Password
               prefix={<LockOutlined />}
-              placeholder="请再次输入新密码"
+              placeholder={t('userMenu.confirmNewPasswordPlaceholder')}
               autoComplete="new-password"
             />
           </Form.Item>
@@ -251,10 +291,10 @@ export default function UserMenu() {
                 setShowChangePassword(false);
                 changePasswordForm.resetFields();
               }}>
-                取消
+                {t('userMenu.cancel')}
               </Button>
               <Button type="primary" htmlType="submit" loading={changingPassword}>
-                确认修改
+                {t('userMenu.confirmChange')}
               </Button>
             </Space>
           </Form.Item>
