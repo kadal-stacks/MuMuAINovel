@@ -36,6 +36,7 @@
 | 🎨 **Style Analysis** | Learn writing style, generate style guides for AI reference |
 | 🔄 **Duplicate Detection** | Detect repetitive content within and across chapters |
 | 💾 **PostgreSQL** | Production-grade database, supports 200+ concurrent users |
+| 🌐 **Interface Localization** | Account-level UI language preference with Indonesian, English, and Simplified Chinese support |
 
 ---
 
@@ -69,6 +70,13 @@
 - 🐳 **Docker Deploy** - One-click startup, ready to use
 - 📤 **Import/Export** - Project data and character card import/export
 - 🎯 **Career System** - Custom career and level systems
+
+### 🌐 Interface Languages
+
+- Choose **Bahasa Indonesia**, **English**, or **简体中文** from the account menu.
+- Your interface-language preference is saved per user account and restored after refresh or login.
+- Interface language is separate from novel content and AI generation prompts.
+- Translation coverage is being expanded module by module; pages not yet localized may still contain Chinese text.
 
 ---
 
@@ -435,6 +443,11 @@ MuMuAINovel/
 | v1.5.0 | Timeline Management | Story event timeline tracking |
 | v1.4.0 | Consistency Detection | AI analysis of character behavior and plot coherence |
 | v1.3.x | Foreshadowing | Smart tracking, auto-injection during AI generation |
+
+### Fork Development Notes
+
+- Added an i18n foundation with per-user interface-language preferences.
+- The current translation sweep covers the project workspace dashboard and global footer; other modules are being localized progressively.
 
 ### v1.2.x - Foundation Enhancement
 
