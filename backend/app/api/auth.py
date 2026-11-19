@@ -4,7 +4,7 @@
 from fastapi import APIRouter, HTTPException, Response, Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Literal
 import hashlib
 from datetime import datetime, timedelta, timezone
 from app.services.oauth_service import LinuxDOOAuthService
@@ -52,6 +52,11 @@ class LocalLoginResponse(BaseModel):
 class SetPasswordRequest(BaseModel):
     """设置密码请求"""
     password: str
+
+
+class SetLanguagePreferenceRequest(BaseModel):
+    """用户界面语言偏好请求"""
+    preferred_language: Literal["id", "en", "zh-CN"]
 
 
 class SetPasswordResponse(BaseModel):
@@ -409,6 +414,25 @@ async def get_current_user(request: Request):
         raise HTTPException(status_code=401, detail="未登录")
     
     return request.state.user.dict()
+
+
+@router.put("/preferences/language")
+async def update_language_preference(
+    request: Request,
+    data: SetLanguagePreferenceRequest
+):
+    """更新当前用户的界面语言偏好"""
+    if not hasattr(request.state, "user") or not request.state.user:
+        raise HTTPException(status_code=401, detail="未登录")
+
+    updated_user = await user_manager.update_preferred_language(
+        request.state.user.user_id,
+        data.preferred_language
+    )
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="用户不存在")
+
+    return {"preferred_language": updated_user.preferred_language}
 
 
 @router.get("/password/status", response_model=PasswordStatusResponse)
