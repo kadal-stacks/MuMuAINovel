@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Empty, Modal, message, Spin, Row, Col, Statistic, Space, Tag, Progress, Typography, Badge, Alert, Upload, Checkbox, Divider, Switch, Dropdown, Form, Input, InputNumber } from 'antd';
 import { EditOutlined, DeleteOutlined, BookOutlined, RocketOutlined, CalendarOutlined, FileTextOutlined, TrophyOutlined, FireOutlined, SettingOutlined, InfoCircleOutlined, CloseOutlined, UploadOutlined, DownloadOutlined, ApiOutlined, MoreOutlined, BulbOutlined, LoadingOutlined, FileSearchOutlined, ReadOutlined } from '@ant-design/icons';
@@ -13,6 +14,7 @@ import ChangelogFloatingButton from '../components/ChangelogFloatingButton';
 const { Title, Text, Paragraph } = Typography;
 
 export default function ProjectList() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { projects, loading } = useStore();
   const [modal, contextHolder] = Modal.useModal();
@@ -85,10 +87,10 @@ export default function ProjectList() {
   const handleDelete = (id: string) => {
     const isMobile = window.innerWidth <= 768;
     modal.confirm({
-      title: '确认删除',
-      content: '删除项目将同时删除所有相关数据，此操作不可恢复。确定要删除吗？',
-      okText: '确定',
-      cancelText: '取消',
+      title: t('projectList.confirmDeleteTitle'),
+      content: t('projectList.confirmDeleteContent'),
+      okText: t('projectList.confirm'),
+      cancelText: t('projectList.cancel'),
       okType: 'danger',
       centered: true,
       ...(isMobile && {
@@ -97,9 +99,9 @@ export default function ProjectList() {
       onOk: async () => {
         try {
           await deleteProject(id);
-          message.success('项目删除成功');
+          message.success(t('projectList.projectDeleted'));
         } catch {
-          message.error('删除项目失败');
+          message.error(t('projectList.deleteProjectFailed'));
         }
       },
     });
@@ -130,14 +132,14 @@ export default function ProjectList() {
         target_words: values.target_words,
       });
 
-      message.success('项目更新成功');
+      message.success(t('projectList.projectUpdated'));
       handleCloseEditModal();
       await refreshProjects();
     } catch (error: any) {
       if (error.errorFields) {
-        message.error('请检查表单填写');
+        message.error(t('projectList.checkForm'));
       } else {
-        message.error('更新失败，请重试');
+        message.error(t('projectList.updateFailed'));
       }
     } finally {
       setUpdating(false);
@@ -157,10 +159,10 @@ export default function ProjectList() {
 
   const getStatusTag = (status: string) => {
     const statusConfig: Record<string, { color: string; text: string; icon: ReactNode }> = {
-      planning: { color: 'blue', text: '规划中', icon: <CalendarOutlined /> },
-      writing: { color: 'green', text: '创作中', icon: <EditOutlined /> },
-      revising: { color: 'orange', text: '修改中', icon: <FileTextOutlined /> },
-      completed: { color: 'purple', text: '已完成', icon: <TrophyOutlined /> },
+      planning: { color: 'blue', text: t('projectList.status.planning'), icon: <CalendarOutlined /> },
+      writing: { color: 'green', text: t('projectList.status.writing'), icon: <EditOutlined /> },
+      revising: { color: 'orange', text: t('projectList.status.revising'), icon: <FileTextOutlined /> },
+      completed: { color: 'purple', text: t('projectList.status.completed'), icon: <TrophyOutlined /> },
     };
     const config = statusConfig[status] || statusConfig.planning;
     return (
@@ -188,11 +190,11 @@ export default function ProjectList() {
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (days === 0) return '今天';
-    if (days === 1) return '昨天';
-    if (days < 7) return `${days}天前`;
-    if (days < 30) return `${Math.floor(days / 7)}周前`;
-    return date.toLocaleDateString('zh-CN');
+    if (days === 0) return t('projectList.date.today');
+    if (days === 1) return t('projectList.date.yesterday');
+    if (days < 7) return t('projectList.date.daysAgo', { count: days });
+    if (days < 30) return t('projectList.date.weeksAgo', { count: Math.floor(days / 7) });
+    return date.toLocaleDateString(i18n.resolvedLanguage === 'en' ? 'en-US' : i18n.resolvedLanguage === 'zh-CN' ? 'zh-CN' : 'id-ID');
   };
 
   const totalWords = projects.reduce((sum, p) => sum + (p.current_words || 0), 0);
@@ -210,11 +212,11 @@ export default function ProjectList() {
       setValidationResult(result);
 
       if (!result.valid) {
-        message.error('文件验证失败');
+        message.error(t('projectList.fileValidationFailed'));
       }
     } catch (error) {
       console.error('验证失败:', error);
-      message.error('文件验证失败');
+      message.error(t('projectList.fileValidationFailed'));
     } finally {
       setValidating(false);
     }
@@ -225,7 +227,7 @@ export default function ProjectList() {
   // 处理导入
   const handleImport = async () => {
     if (!selectedFile || !validationResult?.valid) {
-      message.warning('请选择有效的导入文件');
+      message.warning(t('projectList.chooseValidImportFile'));
       return;
     }
 
@@ -234,7 +236,7 @@ export default function ProjectList() {
       const result = await projectApi.importProject(selectedFile);
 
       if (result.success) {
-        message.success(`项目导入成功！${result.message}`);
+        message.success(t('projectList.importSuccess'));
         setImportModalVisible(false);
         setSelectedFile(null);
         setValidationResult(null);
@@ -247,11 +249,11 @@ export default function ProjectList() {
           navigate(`/project/${result.project_id}`);
         }
       } else {
-        message.error(result.message || '导入失败');
+        message.error(result.message || t('projectList.importFailed'));
       }
     } catch (error) {
       console.error('导入失败:', error);
-      message.error('导入失败，请重试');
+      message.error(t('projectList.importFailedRetry'));
     } finally {
       setImporting(false);
     }
@@ -300,7 +302,7 @@ export default function ProjectList() {
   // 执行导出
   const handleExport = async () => {
     if (selectedProjectIds.length === 0) {
-      message.warning('请至少选择一个项目');
+      message.warning(t('projectList.selectAtLeastOneProject'));
       return;
     }
 
@@ -315,7 +317,7 @@ export default function ProjectList() {
           include_generation_history: exportOptions.includeGenerationHistory,
           include_writing_styles: exportOptions.includeWritingStyles
         });
-        message.success(`项目 "${project?.title}" 导出成功`);
+        message.success(t('projectList.projectExported', { title: project?.title || '' }));
       } else {
         // 批量导出
         let successCount = 0;
@@ -337,16 +339,16 @@ export default function ProjectList() {
         }
 
         if (failCount === 0) {
-          message.success(`成功导出 ${successCount} 个项目`);
+          message.success(t('projectList.bulkExportSuccess', { count: successCount }));
         } else {
-          message.warning(`导出完成：成功 ${successCount} 个，失败 ${failCount} 个`);
+          message.warning(t('projectList.bulkExportPartial', { success: successCount, failed: failCount }));
         }
       }
 
       handleCloseExportModal();
     } catch (error) {
       console.error('导出失败:', error);
-      message.error('导出失败，请重试');
+      message.error(t('projectList.exportFailedRetry'));
     } finally {
       setExporting(false);
     }
@@ -425,10 +427,10 @@ export default function ProjectList() {
                 <Space direction="vertical" size={8}>
                   <Title level={window.innerWidth <= 768 ? 3 : 2} style={{ margin: 0, color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                     <FireOutlined style={{ color: 'rgba(255,255,255,0.9)', marginRight: 12 }} />
-                    我的创作空间
+                    {t('projectList.workspaceTitle')}
                   </Title>
                   <Text style={{ fontSize: window.innerWidth <= 768 ? 13 : 15, color: 'rgba(255,255,255,0.85)' }}>
-                    ✨ 开启你的小说创作之旅
+                    {t('projectList.workspaceSubtitle')}
                   </Text>
                 </Space>
               </Col>
@@ -455,7 +457,7 @@ export default function ProjectList() {
                             fontWeight: 500
                           }}
                         >
-                          灵感模式
+                          {t('projectList.inspirationMode')}
                         </Button>
                       </Col>
                       <Col span={12}>
@@ -476,7 +478,7 @@ export default function ProjectList() {
                             backdropFilter: 'blur(8px)'
                           }}
                         >
-                          向导创建
+                          {t('projectList.guidedCreation')}
                         </Button>
                       </Col>
                     </Row>
@@ -500,7 +502,7 @@ export default function ProjectList() {
                             backdropFilter: 'blur(8px)'
                           }}
                         >
-                          设置
+                          {t('projectList.settings')}
                         </Button>
                       </Col>
                       <Col span={8}>
@@ -509,14 +511,14 @@ export default function ProjectList() {
                             items: [
                               {
                                 key: 'export',
-                                label: '导出项目',
+                                label: t('projectList.exportProject'),
                                 icon: <DownloadOutlined />,
                                 onClick: handleOpenExportModal,
                                 disabled: exportableProjects.length === 0
                               },
                               {
                                 key: 'import',
-                                label: '导入项目',
+                                label: t('projectList.importProject'),
                                 icon: <UploadOutlined />,
                                 onClick: () => setImportModalVisible(true)
                               },
@@ -525,13 +527,13 @@ export default function ProjectList() {
                               },
                               {
                                 key: 'prompt-templates',
-                                label: '提示词管理',
+                                label: t('projectList.promptTemplates'),
                                 icon: <FileSearchOutlined />,
                                 onClick: () => navigate('/prompt-templates')
                               },
                               {
                                 key: 'mcp',
-                                label: 'MCP插件',
+                                label: t('projectList.mcpPlugins'),
                                 icon: <ApiOutlined />,
                                 onClick: () => navigate('/mcp-plugins')
                               }
@@ -554,7 +556,7 @@ export default function ProjectList() {
                               backdropFilter: 'blur(8px)'
                             }}
                           >
-                            更多
+                            {t('projectList.more')}
                           </Button>
                         </Dropdown>
                       </Col>
@@ -584,7 +586,7 @@ export default function ProjectList() {
                         transition: 'all 0.3s ease'
                       }}
                     >
-                      灵感模式
+                      {t('projectList.inspirationMode')}
                     </Button>
                     <Button
                       type="primary"
@@ -603,7 +605,7 @@ export default function ProjectList() {
                         transition: 'all 0.3s ease'
                       }}
                     >
-                      向导创建
+                      {t('projectList.guidedCreation')}
                     </Button>
                     <Button
                       type="default"
@@ -621,21 +623,21 @@ export default function ProjectList() {
                         transition: 'all 0.3s ease'
                       }}
                     >
-                      API设置
+                      {t('projectList.apiSettings')}
                     </Button>
                     <Dropdown
                       menu={{
                         items: [
                           {
                             key: 'export',
-                            label: '导出项目',
+                            label: t('projectList.exportProject'),
                             icon: <DownloadOutlined />,
                             onClick: handleOpenExportModal,
                             disabled: exportableProjects.length === 0
                           },
                           {
                             key: 'import',
-                            label: '导入项目',
+                            label: t('projectList.importProject'),
                             icon: <UploadOutlined />,
                             onClick: () => setImportModalVisible(true)
                           },
@@ -644,13 +646,13 @@ export default function ProjectList() {
                           },
                           {
                             key: 'prompt-templates',
-                            label: '提示词管理',
+                            label: t('projectList.promptTemplates'),
                             icon: <FileSearchOutlined />,
                             onClick: () => navigate('/prompt-templates')
                           },
                           {
                             key: 'mcp',
-                            label: 'MCP插件',
+                            label: t('projectList.mcpPlugins'),
                             icon: <ApiOutlined />,
                             onClick: () => navigate('/mcp-plugins')
                           }
@@ -672,7 +674,7 @@ export default function ProjectList() {
                           transition: 'all 0.3s ease'
                         }}
                       >
-                        更多
+                        {t('projectList.more')}
                       </Button>
                     </Dropdown>
                     <UserMenu />
@@ -687,14 +689,14 @@ export default function ProjectList() {
                   <Space align="center" style={{ width: '100%' }}>
                     <InfoCircleOutlined style={{ fontSize: 16, color: '#1890ff' }} />
                     <Text strong style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}>
-                      首次使用提示
+                      {t('projectList.firstUseTipTitle')}
                     </Text>
                   </Space>
                 }
                 description={
                   <Space direction="vertical" size={8} style={{ width: '100%' }}>
                     <Text style={{ fontSize: window.innerWidth <= 768 ? 12 : 13 }}>
-                      在开始创作之前，请先配置您的AI接口。系统支持OpenAI和Anthropic两种接口。
+                      {t('projectList.firstUseTipBody')}
                     </Text>
                     <Space size={8}>
                       <Button
@@ -708,14 +710,14 @@ export default function ProjectList() {
                           border: 'none'
                         }}
                       >
-                        立即配置
+                        {t('projectList.configureNow')}
                       </Button>
                       <Button
                         size="small"
                         onClick={() => setShowApiTip(false)}
                         style={{ borderRadius: 6 }}
                       >
-                        暂不提醒
+                        {t('projectList.dismissTip')}
                       </Button>
                     </Space>
                   </Space>
@@ -753,8 +755,8 @@ export default function ProjectList() {
                       title={
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: isMobile ? 4 : 8 }}>
                           <span style={{ fontSize: isMobile ? 16 : 24, color: 'rgba(255,255,255,0.9)', marginRight: isMobile ? 0 : 8 }}>📚</span>
-                          {!isMobile && <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 16 }}>总项目数</span>}
-                          {isMobile && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>项目</div>}
+                          {!isMobile && <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 16 }}>{t('projectList.totalProjects')}</span>}
+                          {isMobile && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>{t('projectList.projectsShort')}</div>}
                         </div>
                       }
                       value={projects.length}
@@ -785,8 +787,8 @@ export default function ProjectList() {
                       title={
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: isMobile ? 4 : 8 }}>
                           <span style={{ fontSize: isMobile ? 16 : 24, color: 'rgba(255,255,255,0.9)', marginRight: isMobile ? 0 : 8 }}>✍️</span>
-                          {!isMobile && <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 16 }}>创作中</span>}
-                          {isMobile && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>创作</div>}
+                          {!isMobile && <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 16 }}>{t('projectList.inProgress')}</span>}
+                          {isMobile && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>{t('projectList.writingShort')}</div>}
                         </div>
                       }
                       value={activeProjects}
@@ -817,8 +819,8 @@ export default function ProjectList() {
                       title={
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: isMobile ? 4 : 8 }}>
                           <span style={{ fontSize: isMobile ? 16 : 24, color: 'rgba(255,255,255,0.9)', marginRight: isMobile ? 0 : 8 }}>📝</span>
-                          {!isMobile && <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 16 }}>总字数</span>}
-                          {isMobile && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>字数</div>}
+                          {!isMobile && <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 16 }}>{t('projectList.totalWords')}</span>}
+                          {isMobile && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>{t('projectList.wordsShort')}</div>}
                         </div>
                       }
                       value={totalWords}
@@ -865,7 +867,7 @@ export default function ProjectList() {
                   description={
                     <Space direction="vertical" size={16}>
                       <Text style={{ fontSize: 16, color: '#8c8c8c' }}>
-                        还没有项目，开始创建你的第一个小说项目吧！
+                        {t('projectList.emptyState')}
                       </Text>
                       <Space size={12}>
                         <Button
@@ -880,7 +882,7 @@ export default function ProjectList() {
                             boxShadow: '0 2px 8px rgba(227, 173, 54, 0.2)'
                           }}
                         >
-                          灵感模式
+                          {t('projectList.inspirationMode')}
                         </Button>
                         <Button
                           type="primary"
@@ -893,7 +895,7 @@ export default function ProjectList() {
                             boxShadow: '0 2px 8px rgba(77, 128, 136, 0.2)'
                           }}
                         >
-                          向导创建
+                          {t('projectList.guidedCreation')}
                         </Button>
                       </Space>
                     </Space>
@@ -910,7 +912,7 @@ export default function ProjectList() {
                     <Col {...gridConfig} key={project.id}>
                       <Badge.Ribbon
                         text={project.wizard_status === 'incomplete' ? (
-                          <Tag color="orange" icon={<LoadingOutlined spin />}>生成中断</Tag>
+                          <Tag color="orange" icon={<LoadingOutlined spin />}>{t('projectList.generationInterrupted')}</Tag>
                         ) : getStatusTag(project.status)}
                         color="transparent"
                         style={{ top: 12, right: 12 }}
@@ -984,13 +986,13 @@ export default function ProjectList() {
                                 marginBottom: 16
                               }}
                             >
-                              {project.description || '暂无描述'}
+                              {project.description || t('projectList.noDescription')}
                             </Paragraph>
 
                             {project.target_words && project.target_words > 0 && (
                               <div style={{ marginBottom: 16 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                                  <Text type="secondary" style={{ fontSize: 12 }}>完成进度</Text>
+                                  <Text type="secondary" style={{ fontSize: 12 }}>{t('projectList.completionProgress')}</Text>
                                   <Text strong style={{ fontSize: 12 }}>{progress}%</Text>
                                 </div>
                                 <Progress
@@ -1019,7 +1021,7 @@ export default function ProjectList() {
                                         : project.current_words
                                     }
                                   </div>
-                                  <Text type="secondary" style={{ fontSize: 12 }}>已写字数</Text>
+                                  <Text type="secondary" style={{ fontSize: 12 }}>{t('projectList.wordsWritten')}</Text>
                                 </div>
                               </Col>
                               <Col span={12}>
@@ -1036,7 +1038,7 @@ export default function ProjectList() {
                                       : '--'
                                     }
                                   </div>
-                                  <Text type="secondary" style={{ fontSize: 12 }}>章节进度</Text>
+                                  <Text type="secondary" style={{ fontSize: 12 }}>{t('projectList.chapterProgress')}</Text>
                                 </div>
                               </Col>
                             </Row>
@@ -1053,7 +1055,7 @@ export default function ProjectList() {
                                   navigate(`/chapters/${chapterStats[project.id].firstChapterId}/reader`);
                                 }}
                               >
-                                阅读文章 ({chapterStats[project.id].completed} 章)
+                                {t('projectList.readChapters', { count: chapterStats[project.id].completed })}
                               </Button>
                             )}
 
@@ -1113,13 +1115,13 @@ export default function ProjectList() {
 
         {/* 导入项目对话框 */}
         <Modal
-          title="导入项目"
+          title={t('projectList.importProject')}
           open={importModalVisible}
           onOk={handleImport}
           onCancel={handleCloseImportModal}
           confirmLoading={importing}
-          okText="导入"
-          cancelText="取消"
+          okText={t('projectList.import')}
+          cancelText={t('projectList.cancel')}
           width={window.innerWidth <= 768 ? '90%' : 500}
           centered
           okButtonProps={{ disabled: !validationResult?.valid }}
@@ -1134,7 +1136,7 @@ export default function ProjectList() {
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
             <div>
               <p style={{ marginBottom: '12px', color: '#666', fontSize: window.innerWidth <= 768 ? 13 : 14 }}>
-                选择之前导出的 JSON 格式项目文件
+                {t('projectList.importJsonDescription')}
               </p>
               <Upload
                 accept=".json"
@@ -1146,13 +1148,13 @@ export default function ProjectList() {
                 }}
                 fileList={selectedFile ? [{ uid: '-1', name: selectedFile.name, status: 'done' }] as any : []}
               >
-                <Button icon={<UploadOutlined />} block>选择文件</Button>
+                <Button icon={<UploadOutlined />} block>{t('projectList.chooseFile')}</Button>
               </Upload>
             </div>
 
             {validating && (
               <div style={{ textAlign: 'center', padding: '20px' }}>
-                <Spin tip="验证文件中..." />
+                <Spin tip={t('projectList.validatingFile')} />
               </div>
             )}
 
@@ -1164,40 +1166,40 @@ export default function ProjectList() {
                       color: validationResult.valid ? '#52c41a' : '#ff4d4f',
                       fontSize: window.innerWidth <= 768 ? 13 : 14
                     }}>
-                      {validationResult.valid ? '✓ 文件验证通过' : '✗ 文件验证失败'}
+                      {validationResult.valid ? t('projectList.validationPassed') : t('projectList.validationFailed')}
                     </Text>
                   </div>
 
                   {validationResult.project_name && (
                     <div>
-                      <Text type="secondary" style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>项目名称：</Text>
+                      <Text type="secondary" style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>{t('projectList.projectName')}: </Text>
                       <Text strong style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>{validationResult.project_name}</Text>
                     </div>
                   )}
 
                   {validationResult.statistics && Object.keys(validationResult.statistics).length > 0 && (
                     <div>
-                      <Text type="secondary" style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>数据统计：</Text>
+                      <Text type="secondary" style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>{t('projectList.dataStatistics')}: </Text>
                       <div style={{ marginTop: 8 }}>
                         <Row gutter={[8, 8]}>
                           {validationResult.statistics.chapters > 0 && (
                             <Col span={12}>
-                              <Tag color="blue">章节: {validationResult.statistics.chapters}</Tag>
+                              <Tag color="blue">{t('projectList.chapters')}: {validationResult.statistics.chapters}</Tag>
                             </Col>
                           )}
                           {validationResult.statistics.characters > 0 && (
                             <Col span={12}>
-                              <Tag color="green">角色: {validationResult.statistics.characters}</Tag>
+                              <Tag color="green">{t('projectList.characters')}: {validationResult.statistics.characters}</Tag>
                             </Col>
                           )}
                           {validationResult.statistics.outlines > 0 && (
                             <Col span={12}>
-                              <Tag color="purple">大纲: {validationResult.statistics.outlines}</Tag>
+                              <Tag color="purple">{t('projectList.outlines')}: {validationResult.statistics.outlines}</Tag>
                             </Col>
                           )}
                           {validationResult.statistics.relationships > 0 && (
                             <Col span={12}>
-                              <Tag color="orange">关系: {validationResult.statistics.relationships}</Tag>
+                              <Tag color="orange">{t('projectList.relationships')}: {validationResult.statistics.relationships}</Tag>
                             </Col>
                           )}
                         </Row>
@@ -1207,7 +1209,7 @@ export default function ProjectList() {
 
                   {validationResult.errors && validationResult.errors.length > 0 && (
                     <div>
-                      <Text type="danger" strong style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>错误：</Text>
+                      <Text type="danger" strong style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>{t('projectList.errors')}: </Text>
                       <ul style={{
                         margin: '4px 0 0 0',
                         paddingLeft: '20px',
@@ -1223,7 +1225,7 @@ export default function ProjectList() {
 
                   {validationResult.warnings && validationResult.warnings.length > 0 && (
                     <div>
-                      <Text type="warning" strong style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>警告：</Text>
+                      <Text type="warning" strong style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>{t('projectList.warnings')}: </Text>
                       <ul style={{
                         margin: '4px 0 0 0',
                         paddingLeft: '20px',
@@ -1244,13 +1246,13 @@ export default function ProjectList() {
 
         {/* 导出项目对话框 */}
         <Modal
-          title="导出项目"
+          title={t('projectList.exportProject')}
           open={exportModalVisible}
           onOk={handleExport}
           onCancel={handleCloseExportModal}
           confirmLoading={exporting}
-          okText={selectedProjectIds.length > 0 ? `导出 (${selectedProjectIds.length})` : '导出'}
-          cancelText="取消"
+          okText={selectedProjectIds.length > 0 ? t('projectList.exportCount', { count: selectedProjectIds.length }) : t('projectList.export')}
+          cancelText={t('projectList.cancel')}
           width={window.innerWidth <= 768 ? '90%' : 700}
           centered
           okButtonProps={{ disabled: selectedProjectIds.length === 0 }}
@@ -1270,7 +1272,7 @@ export default function ProjectList() {
               styles={{ body: { padding: window.innerWidth <= 768 ? 12 : 16 } }}
             >
               <Space direction="vertical" size={12} style={{ width: '100%' }}>
-                <Text strong style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}>导出选项</Text>
+                <Text strong style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}>{t('projectList.exportOptions')}</Text>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Switch
                     size={window.innerWidth <= 768 ? 'small' : 'default'}
@@ -1283,9 +1285,9 @@ export default function ProjectList() {
                       lineHeight: window.innerWidth <= 768 ? '16px' : '22px'
                     }}
                   />
-                  <Text style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}>包含写作风格</Text>
+                  <Text style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}>{t('projectList.includeWritingStyles')}</Text>
                   <InfoCircleOutlined
-                    title="导出项目关联的写作风格数据"
+                    title={t('projectList.exportWritingStylesTooltip')}
                     style={{ color: '#999', fontSize: window.innerWidth <= 768 ? 12 : 14 }}
                   />
                 </div>
@@ -1301,9 +1303,9 @@ export default function ProjectList() {
                       lineHeight: window.innerWidth <= 768 ? '16px' : '22px'
                     }}
                   />
-                  <Text style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}>包含生成历史</Text>
+                  <Text style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}>{t('projectList.includeGenerationHistory')}</Text>
                   <InfoCircleOutlined
-                    title="导出AI生成的历史记录（最多100条）"
+                    title={t('projectList.exportGenerationHistoryTooltip')}
                     style={{ color: '#999', fontSize: window.innerWidth <= 768 ? 12 : 14 }}
                   />
                 </div>
@@ -1316,7 +1318,7 @@ export default function ProjectList() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: window.innerWidth <= 768 ? 'wrap' : 'nowrap', gap: 8 }}>
                 <Text strong style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}>
-                  选择要导出的项目 {exportableProjects.length > 0 && <Text type="secondary" style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>({exportableProjects.length}个可导出)</Text>}
+                  {t('projectList.selectProjectsToExport')} {exportableProjects.length > 0 && <Text type="secondary" style={{ fontSize: window.innerWidth <= 768 ? 12 : 14 }}>{t('projectList.exportableCount', { count: exportableProjects.length })}</Text>}
                 </Text>
                 <Checkbox
                   checked={selectedProjectIds.length === exportableProjects.length && exportableProjects.length > 0}
@@ -1324,14 +1326,14 @@ export default function ProjectList() {
                   onChange={handleToggleAll}
                   style={{ fontSize: window.innerWidth <= 768 ? 13 : 14 }}
                 >
-                  全选
+                  {t('projectList.selectAll')}
                 </Checkbox>
               </div>
 
               <div style={{ maxHeight: window.innerWidth <= 768 ? 300 : 400, overflowY: 'auto' }}>
                 {exportableProjects.length === 0 ? (
                   <Empty
-                    description="暂无可导出的项目"
+                    description={t('projectList.noExportableProjects')}
                     style={{ padding: '40px 0' }}
                   />
                 ) : (
@@ -1364,7 +1366,7 @@ export default function ProjectList() {
                               {getStatusTag(project.status)}
                             </div>
                             <Text type="secondary" style={{ fontSize: window.innerWidth <= 768 ? 11 : 12 }}>
-                              {project.current_words || 0} 字
+                              {project.current_words || 0} {t('projectList.wordsUnit')}
                               {project.description && ` · ${project.description.substring(0, window.innerWidth <= 768 ? 30 : 50)}${project.description.length > (window.innerWidth <= 768 ? 30 : 50) ? '...' : ''}`}
                             </Text>
                           </div>
@@ -1383,7 +1385,7 @@ export default function ProjectList() {
 
             {selectedProjectIds.length > 0 && (
               <Alert
-                message={`已选择 ${selectedProjectIds.length} 个项目`}
+                message={t('projectList.selectedProjects', { count: selectedProjectIds.length })}
                 type="info"
                 showIcon
                 style={{ marginTop: 8 }}
@@ -1394,13 +1396,13 @@ export default function ProjectList() {
 
         {/* 编辑项目对话框 */}
         <Modal
-          title={`编辑项目: ${editingProject?.title || ''}`}
+          title={t('projectList.editProjectTitle', { title: editingProject?.title || '' })}
           open={editModalVisible}
           onOk={handleUpdateProject}
           onCancel={handleCloseEditModal}
           confirmLoading={updating}
-          okText="保存"
-          cancelText="取消"
+          okText={t('projectList.save')}
+          cancelText={t('projectList.cancel')}
           width={window.innerWidth <= 768 ? '90%' : 600}
           centered
           styles={{
@@ -1417,35 +1419,35 @@ export default function ProjectList() {
             autoComplete="off"
           >
             <Form.Item
-              label="项目简介"
+              label={t('projectList.projectDescription')}
               name="description"
               rules={[
-                { max: 1000, message: '简介不能超过1000字' }
+                { max: 1000, message: t('projectList.descriptionTooLong') }
               ]}
             >
               <Input.TextArea
                 rows={4}
-                placeholder="请输入项目简介（选填）"
+                placeholder={t('projectList.projectDescriptionPlaceholder')}
                 showCount
                 maxLength={1000}
               />
             </Form.Item>
 
             <Form.Item
-              label="目标字数"
+              label={t('projectList.targetWordCount')}
               name="target_words"
               rules={[
-                { type: 'number', min: 0, message: '目标字数不能为负数' },
-                { type: 'number', max: 2147483647, message: '目标字数超出范围' }
+                { type: 'number', min: 0, message: t('projectList.targetWordsNegative') },
+                { type: 'number', max: 2147483647, message: t('projectList.targetWordsTooLarge') }
               ]}
             >
               <InputNumber
                 style={{ width: '100%' }}
-                placeholder="请输入目标字数（选填，最大21亿字）"
+                placeholder={t('projectList.targetWordCountPlaceholder')}
                 min={0}
                 max={2147483647}
                 step={1000}
-                addonAfter="字"
+                addonAfter={t('projectList.wordsUnit')}
               />
             </Form.Item>
           </Form>
