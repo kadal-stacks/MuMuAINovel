@@ -130,6 +130,40 @@ const resources = {
         "targetWordCountPlaceholder": "Masukkan target jumlah kata (opsional, maksimal 2,1 miliar)"
       },
       footer: {"sponsor":"Dukung Proyek","versionAvailable":"Versi baru v{{version}} tersedia. Klik untuk melihat.","currentVersion":"Versi saat ini","linuxDoCommunity":"Komunitas LinuxDO"},
+      languages: {
+        id: 'Bahasa Indonesia',
+        en: 'English',
+        zhCN: '简体中文'
+      }
+    }
+  },
+  en: {
+    translation: {
+      userMenu: {
+        trustLevel: 'Trust Level',
+        administrator: 'Administrator',
+        userManagement: 'User Management',
+        changePassword: 'Change Password',
+        logout: 'Log out',
+        language: 'Interface Language',
+        languageSaved: 'Interface language updated',
+        languageSaveFailed: 'Could not save interface language',
+        passwordChangeSuccess: 'Password updated',
+        passwordChangeFailed: 'Could not update password',
+        logoutSuccess: 'Logged out',
+        logoutFailed: 'Could not log out',
+        adminOnly: 'Only administrators can access user management',
+        newPassword: 'New password',
+        newPasswordRequired: 'Enter a new password',
+        passwordMin: 'Password must contain at least 6 characters',
+        newPasswordPlaceholder: 'Enter a new password (at least 6 characters)',
+        confirmPassword: 'Confirm password',
+        confirmPasswordRequired: 'Please confirm the new password',
+        passwordMismatch: 'The passwords do not match',
+        confirmNewPasswordPlaceholder: 'Enter the new password again',
+        cancel: 'Cancel',
+        confirmChange: 'Confirm change'
+      },
       projectList: {
         "confirmDeleteTitle": "Delete project?",
         "confirmDeleteContent": "Deleting this project will also delete all related data. This action cannot be undone. Continue?",
@@ -240,6 +274,40 @@ const resources = {
         "targetWordCountPlaceholder": "Enter a target word count (optional, max. 2.1 billion)"
       },
       footer: {"sponsor":"Support","versionAvailable":"Version v{{version}} is available. Click to view.","currentVersion":"Current version","linuxDoCommunity":"LinuxDO Community"},
+      languages: {
+        id: 'Bahasa Indonesia',
+        en: 'English',
+        zhCN: '简体中文'
+      }
+    }
+  },
+  'zh-CN': {
+    translation: {
+      userMenu: {
+        trustLevel: '信任等级',
+        administrator: '管理员',
+        userManagement: '用户管理',
+        changePassword: '修改密码',
+        logout: '退出登录',
+        language: '界面语言',
+        languageSaved: '界面语言已更新',
+        languageSaveFailed: '无法保存界面语言',
+        passwordChangeSuccess: '密码修改成功',
+        passwordChangeFailed: '修改密码失败',
+        logoutSuccess: '已退出登录',
+        logoutFailed: '退出登录失败',
+        adminOnly: '只有管理员可以访问用户管理',
+        newPassword: '新密码',
+        newPasswordRequired: '请输入新密码',
+        passwordMin: '密码至少需要 6 个字符',
+        newPasswordPlaceholder: '请输入新密码（至少 6 个字符）',
+        confirmPassword: '确认密码',
+        confirmPasswordRequired: '请确认新密码',
+        passwordMismatch: '两次输入的密码不一致',
+        confirmNewPasswordPlaceholder: '请再次输入新密码',
+        cancel: '取消',
+        confirmChange: '确认修改'
+      },
       projectList: {
         "confirmDeleteTitle": "确认删除项目？",
         "confirmDeleteContent": "删除项目将同时删除所有相关数据，此操作不可恢复。确定继续吗？",
@@ -338,74 +406,6 @@ const resources = {
         "targetWordCountPlaceholder": "请输入目标字数（选填，最大21亿字）"
       },
       footer: {"sponsor":"赞助支持","versionAvailable":"发现新版本 v{{version}}，点击查看","currentVersion":"当前版本","linuxDoCommunity":"LinuxDO 社区"},
-      languages: {
-        id: 'Bahasa Indonesia',
-        en: 'English',
-        zhCN: '简体中文'
-      }
-    }
-  },
-  en: {
-    translation: {
-      userMenu: {
-        trustLevel: 'Trust Level',
-        administrator: 'Administrator',
-        userManagement: 'User Management',
-        changePassword: 'Change Password',
-        logout: 'Log out',
-        language: 'Interface Language',
-        languageSaved: 'Interface language updated',
-        languageSaveFailed: 'Could not save interface language',
-        passwordChangeSuccess: 'Password updated',
-        passwordChangeFailed: 'Could not update password',
-        logoutSuccess: 'Logged out',
-        logoutFailed: 'Could not log out',
-        adminOnly: 'Only administrators can access user management',
-        newPassword: 'New password',
-        newPasswordRequired: 'Enter a new password',
-        passwordMin: 'Password must contain at least 6 characters',
-        newPasswordPlaceholder: 'Enter a new password (at least 6 characters)',
-        confirmPassword: 'Confirm password',
-        confirmPasswordRequired: 'Please confirm the new password',
-        passwordMismatch: 'The passwords do not match',
-        confirmNewPasswordPlaceholder: 'Enter the new password again',
-        cancel: 'Cancel',
-        confirmChange: 'Confirm change'
-      },
-      languages: {
-        id: 'Bahasa Indonesia',
-        en: 'English',
-        zhCN: '简体中文'
-      }
-    }
-  },
-  'zh-CN': {
-    translation: {
-      userMenu: {
-        trustLevel: '信任等级',
-        administrator: '管理员',
-        userManagement: '用户管理',
-        changePassword: '修改密码',
-        logout: '退出登录',
-        language: '界面语言',
-        languageSaved: '界面语言已更新',
-        languageSaveFailed: '无法保存界面语言',
-        passwordChangeSuccess: '密码修改成功',
-        passwordChangeFailed: '修改密码失败',
-        logoutSuccess: '已退出登录',
-        logoutFailed: '退出登录失败',
-        adminOnly: '只有管理员可以访问用户管理',
-        newPassword: '新密码',
-        newPasswordRequired: '请输入新密码',
-        passwordMin: '密码至少需要 6 个字符',
-        newPasswordPlaceholder: '请输入新密码（至少 6 个字符）',
-        confirmPassword: '确认密码',
-        confirmPasswordRequired: '请确认新密码',
-        passwordMismatch: '两次输入的密码不一致',
-        confirmNewPasswordPlaceholder: '请再次输入新密码',
-        cancel: '取消',
-        confirmChange: '确认修改'
-      },
       languages: {
         id: 'Bahasa Indonesia',
         en: 'English',
