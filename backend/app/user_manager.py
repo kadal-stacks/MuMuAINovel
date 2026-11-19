@@ -21,6 +21,7 @@ class User(BaseModel):
     linuxdo_id: str
     created_at: str
     last_login: str
+    preferred_language: str = "id"
 
 
 class UserManager:
@@ -179,6 +180,25 @@ class UserManager:
             
             return True
     
+    async def update_preferred_language(self, user_id: str, preferred_language: str) -> Optional[User]:
+        """更新用户界面语言偏好"""
+        from app.models.user import User as UserModel
+
+        async with await self._get_session() as session:
+            result = await session.execute(
+                select(UserModel).where(UserModel.user_id == user_id)
+            )
+            user = result.scalar_one_or_none()
+
+            if not user:
+                return None
+
+            user.preferred_language = preferred_language
+            await session.commit()
+            await session.refresh(user)
+
+            return User(**user.to_dict())
+
     async def delete_user(self, user_id: str) -> bool:
         """
         删除用户
