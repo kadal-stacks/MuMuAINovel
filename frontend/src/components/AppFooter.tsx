@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Typography, Space, Divider, Badge, Button } from 'antd';
 import { GithubOutlined, CopyrightOutlined, HeartFilled, ClockCircleOutlined, GiftOutlined } from '@ant-design/icons';
 import { VERSION_INFO, getVersionString } from '../config/version';
@@ -7,6 +8,7 @@ import { checkLatestVersion } from '../services/versionService';
 const { Text, Link } = Typography;
 
 export default function AppFooter() {
+  const { t } = useTranslation();
   const isMobile = window.innerWidth <= 768;
   const [hasUpdate, setHasUpdate] = useState(false);
   const [latestVersion, setLatestVersion] = useState('');
@@ -80,7 +82,7 @@ export default function AppFooter() {
                   color: 'var(--color-primary)',
                   cursor: hasUpdate ? 'pointer' : 'default',
                 }}
-                title={hasUpdate ? `发现新版本 v${latestVersion}，点击查看` : '当前版本'}
+                title={hasUpdate ? t('footer.versionAvailable', { version: latestVersion }) : t('footer.currentVersion')}
               >
                 <strong style={{ color: 'var(--color-text-primary)' }}>{VERSION_INFO.projectName}</strong>
                 <span>{getVersionString()}</span>
@@ -102,7 +104,7 @@ export default function AppFooter() {
                 gap: 4,
               }}
             >
-              赞助
+              {t('footer.sponsor')}
             </Button>
             <Divider type="vertical" style={{ margin: '0 4px', borderColor: 'var(--color-border)' }} />
             <Link
@@ -199,7 +201,7 @@ export default function AppFooter() {
                 color: 'var(--color-text-secondary)',
               }}
             >
-              LinuxDO 社区
+              {t('footer.linuxDoCommunity')}
             </Link>
 
             {/* 赞助按钮 */}
@@ -229,7 +231,7 @@ export default function AppFooter() {
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.5)';
               }}
             >
-              赞助支持
+              {t('footer.sponsor')}
             </Button>
 
             {/* 许可证 */}
