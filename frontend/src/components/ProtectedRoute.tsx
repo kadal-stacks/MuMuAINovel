@@ -4,6 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { Spin } from 'antd';
 import { authApi } from '../services/api';
 import { sessionManager } from '../utils/sessionManager';
+import i18n from '../i18n';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -16,20 +17,24 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await authApi.getCurrentUser();
+        const user = await authApi.getCurrentUser();
+        try {
+          await i18n.changeLanguage(user.preferred_language || 'id');
+        } catch (localeError) {
+          console.warn('Could not apply the saved interface language:', localeError);
+        }
+
         setIsAuthenticated(true);
-        // 启动会话管理器
         sessionManager.start();
       } catch {
         setIsAuthenticated(false);
-        // 停止会话管理器
         sessionManager.stop();
       }
     };
     checkAuth();
-    
+
     return () => {
-      // 组件卸载时不停止会话管理器，让它在整个应用生命周期内运行
+      // Keep the session manager active across route changes.
     };
   }, []);
 
