@@ -167,7 +167,7 @@ export default function AppFooter() {
                     e.currentTarget.style.transform = 'scale(1)';
                   }
                 }}
-                title={hasUpdate ? `发现新版本 v${latestVersion}，点击查看` : '当前版本'}
+                title={hasUpdate ? t('footer.versionAvailable', { version: latestVersion }) : t('footer.currentVersion')}
               >
                 <strong style={{ color: 'var(--color-text-primary)' }}>{VERSION_INFO.projectName}</strong>
                 <span>{getVersionString()}</span>
