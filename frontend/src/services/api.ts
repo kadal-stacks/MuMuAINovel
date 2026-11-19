@@ -138,6 +138,9 @@ export const authApi = {
 
   getCurrentUser: () => api.get<unknown, User>('/auth/user'),
 
+  setPreferredLanguage: (preferred_language: 'id' | 'en' | 'zh-CN') =>
+    api.put<unknown, { preferred_language: 'id' | 'en' | 'zh-CN' }>('/auth/preferences/language', { preferred_language }),
+
   getPasswordStatus: () => api.get<unknown, {
     has_password: boolean;
     has_custom_password: boolean;
