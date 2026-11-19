@@ -19,6 +19,7 @@ class User(Base):
     linuxdo_id = Column(String(100), nullable=False, unique=True, index=True, comment="LinuxDO用户ID或本地用户ID")
     created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="创建时间")
     last_login = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), comment="最后登录时间")
+    preferred_language = Column(String(10), nullable=False, default="id", server_default="id", comment="用户界面语言偏好")
     
     def to_dict(self):
         """转换为字典"""
@@ -32,6 +33,7 @@ class User(Base):
             "linuxdo_id": self.linuxdo_id,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "last_login": self.last_login.isoformat() if self.last_login else None,
+            "preferred_language": self.preferred_language or "id",
         }
 
 
