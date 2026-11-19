@@ -9,6 +9,7 @@ export interface User {
   linuxdo_id: string;
   created_at: string;
   last_login: string;
+  preferred_language: "id" | "en" | "zh-CN";
 }
 
 // 伏笔管理类型定义
