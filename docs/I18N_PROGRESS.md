@@ -36,6 +36,12 @@ The localization foundation includes:
 
 A page not listed as complete may still display Chinese text. This is an incremental UI translation effort, not a claim that every screen is already localized.
 
+## Visual Evidence
+
+See the [Localization Screenshot Gallery](screenshots/README.md) for the account-menu language checkpoints, original workspace baseline, Indonesian and English workspace screenshots after the profile-card layout fix, and the remaining untranslated login and welcome-announcement screens.
+
+The gallery uses sanitized copies only: test credential values are redacted and community invitation QR codes are obscured. VM, terminal, editor, file-manager, and Portainer troubleshooting images are intentionally excluded from the public project documentation.
+
 ## Validation Notes
 
 The following checks were performed during the workspace and footer batch:

@@ -1,0 +1,9 @@
+file,capture_date,purpose,sanitization
+account-menu-id.png,2026-11-19,Indonesian account menu checkpoint,No sensitive input fields
+account-menu-en.png,2026-11-19,English account menu checkpoint,No sensitive input fields
+workspace-baseline-zh-cn.png,2026-11-19,Pre-sweep Chinese workspace baseline,Browser chrome cropped
+workspace-id-before-layout-fix.png,2026-11-20,Indonesian workspace before profile-card layout fix,Browser chrome cropped
+workspace-id-final.png,2026-11-20,Indonesian workspace after profile-card layout fix,Browser chrome cropped
+workspace-en-final.png,2026-11-20,English workspace after profile-card layout fix,Browser chrome cropped
+login-localization-pending-redacted.png,2026-11-20,Login translation gap,Test username/password values blurred; browser chrome cropped
+welcome-announcement-localization-pending-redacted.png,2026-11-20,Welcome announcement translation gap,Invite cards and QR/group identifiers obscured; browser chrome cropped
