@@ -22,7 +22,7 @@ export default function AppFooter() {
         setHasUpdate(result.hasUpdate);
         setLatestVersion(result.latestVersion);
         setReleaseUrl(result.releaseUrl);
-      } catch (error) {
+      } catch {
         // 静默失败
       }
     };
