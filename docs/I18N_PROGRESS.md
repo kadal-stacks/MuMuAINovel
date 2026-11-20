@@ -29,8 +29,8 @@ The localization foundation includes:
 | Project workspace dashboard | Complete for current sweep | Workspace title/subtitle, primary navigation, first-use notice, empty state, project statistics, statuses, relative dates, project actions, and import/export dialogs have translations in all three languages. |
 | Workspace header and profile card | Complete for current sweep | Header columns and account-card sizing prevent longer localized labels from squeezing the display name and role into narrow lines. |
 | Global footer | Complete | Version tooltip, sponsor/support, community, and footer labels use translation resources. |
-| Login and authentication screens | Pending | Login UI and authentication notices still contain Chinese text. |
-| Welcome announcement | Pending | The first-login/community announcement and its display-duration options still contain Chinese text. |
+| Login and authentication screens | Implemented, validation pending | Login offers a public language selector; local sign-in, LinuxDO callback, first-login password setup, and authentication feedback use all three interface languages. |
+| Welcome announcement | Implemented, validation pending | Announcement content, community labels, QR-code fallbacks, and display-duration actions use all three interface languages. |
 | Project detail and novel editor | Pending | Translation sweep has not yet covered these screens. |
 | Wizard, settings, and remaining modules | Pending | To be localized module by module. |
 
@@ -51,6 +51,7 @@ The following checks were performed during the workspace and footer batch:
 - Browser smoke checks: Bahasa Indonesia and English were visually confirmed on the project workspace and global footer.
 - Language preference persistence was verified during the localization foundation work.
 - The workspace profile layout was rechecked after applying the no-wrap/flex-sizing adjustment.
+- Login/authentication and welcome-announcement localization has been implemented; local TypeScript/build and browser verification are pending.
 - Targeted ESLint checks pass for `main.tsx`, `AppProviders.tsx`, and `AppFooter.tsx`.
 
 The repository-wide ESLint run is not yet clean because the upstream codebase contains existing lint debt, including explicit `any` annotations in several components and pages. The known existing findings in `ProjectList.tsx` and `UserMenu.tsx` were not broadened into this localization patch.
@@ -59,9 +60,8 @@ The production bundle currently triggers Vite's advisory about a JavaScript chun
 
 ## Next Localization Batch
 
-1. Login and authentication screens.
-2. First-login welcome announcement.
-3. Project detail and novel editor.
-4. Wizard, settings, and remaining modules.
+1. Validate login, OAuth callback, first-login password setup, and welcome announcement in Indonesian, English, and Simplified Chinese.
+2. Project detail and novel editor.
+3. Wizard, settings, and remaining modules.
 
 Keep interface localization separate from the founder roadmap's multilingual novel generation and translation features.

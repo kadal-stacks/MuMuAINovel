@@ -1,5 +1,6 @@
 import { Modal, Button, Space } from 'antd';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface AnnouncementModalProps {
   visible: boolean;
@@ -9,6 +10,7 @@ interface AnnouncementModalProps {
 }
 
 export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, onNeverShow }: AnnouncementModalProps) {
+  const { t } = useTranslation();
   const [qqImageError, setQqImageError] = useState(false);
   const [wxImageError, setWxImageError] = useState(false);
 
@@ -38,7 +40,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
           color: 'var(--color-primary)',
           textAlign: 'center',
         }}>
-          🎉 欢迎使用 AI小说创作助手
+          {t('announcement.title')}
         </div>
       }
       open={visible}
@@ -54,7 +56,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
               fontSize: '14px',
             }}
           >
-            今日内不再展示
+            {t('announcement.doNotShowToday')}
           </Button>
           <Button
             type="primary"
@@ -69,7 +71,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
               boxShadow: 'var(--shadow-primary)',
             }}
           >
-            永不再展示
+            {t('announcement.neverShow')}
           </Button>
         </Space>
       }
@@ -99,21 +101,21 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
           color: 'var(--color-text-secondary)',
           lineHeight: '1.6',
         }}>
-          <p>👋 欢迎加入我们的交流群！</p>
-          <p>在这里你可以：</p>
+          <p>{t('announcement.welcomeCommunity')}</p>
+          <p>{t('announcement.intro')}</p>
           <ul style={{
             textAlign: 'left',
             marginLeft: '40px',
             marginTop: '12px',
             marginBottom: '20px',
           }}>
-            <li>💬 与其他创作者交流心得</li>
-            <li>💡 获取最新功能更新和使用技巧</li>
-            <li>🐛 反馈问题和建议</li>
-            <li>📚 分享创作经验和灵感</li>
+            <li>{t('announcement.featureExchange')}</li>
+            <li>{t('announcement.featureUpdates')}</li>
+            <li>{t('announcement.featureFeedback')}</li>
+            <li>{t('announcement.featureInspiration')}</li>
           </ul>
           <p style={{ fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '16px' }}>
-            扫描下方二维码加入交流群：
+            {t('announcement.qrPrompt')}
           </p>
         </div>
 
@@ -135,7 +137,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
             minWidth: '280px',
           }}>
             <p style={{ fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '12px', fontSize: '15px' }}>
-              QQ交流群
+              {t('announcement.qqGroup')}
             </p>
             {!qqImageError ? (
               <div style={{
@@ -149,7 +151,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
               }}>
                 <img
                   src="/qq.jpg"
-                  alt="QQ交流群二维码"
+                  alt={t('announcement.qqQrAlt')}
                   style={{
                     maxWidth: '280px',
                     maxHeight: '280px',
@@ -172,7 +174,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
                 borderRadius: '8px',
                 color: '#999',
               }}>
-                <p>二维码加载失败</p>
+                <p>{t('announcement.qrLoadFailed')}</p>
               </div>
             )}
           </div>
@@ -185,7 +187,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
             minWidth: '280px',
           }}>
             <p style={{ fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '12px', fontSize: '15px' }}>
-              微信交流群
+              {t('announcement.wechatGroup')}
             </p>
             {!wxImageError ? (
               <div style={{
@@ -199,7 +201,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
               }}>
                 <img
                   src="/WX.png"
-                  alt="微信交流群二维码"
+                  alt={t('announcement.wechatQrAlt')}
                   style={{
                     maxWidth: '280px',
                     maxHeight: '280px',
@@ -222,7 +224,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
                 borderRadius: '8px',
                 color: '#999',
               }}>
-                <p>二维码加载失败</p>
+                <p>{t('announcement.qrLoadFailed')}</p>
               </div>
             )}
           </div>
@@ -237,7 +239,7 @@ export default function AnnouncementModal({ visible, onClose, onDoNotShowToday, 
           fontSize: '14px',
           color: 'var(--color-warning)',
         }}>
-          💡 提示：选择"今日内不再展示"当天不再显示，选择"永不再展示"将永久隐藏此公告
+          {t('announcement.visibilityTip')}
         </div>
       </div>
     </Modal>

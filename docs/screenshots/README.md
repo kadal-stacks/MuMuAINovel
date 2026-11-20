@@ -2,7 +2,7 @@
 
 This gallery records visual checkpoints from the interface-localization work in the `kadal-stacks/MuMuAINovel` fork. Screenshots were captured from a self-hosted test instance on 19-20 November 2026.
 
-> These images document UI behavior and translation coverage, not a release build or production deployment guarantee. The screenshots show an empty test workspace. They do not imply that project content or AI-generated novel text is translated by the interface-language setting.
+> These images document UI behavior and translation coverage, not a release build or production deployment guarantee. The screenshots show an empty test workspace. They do not imply that project content or AI-generated novel text is translated by the interface-language setting. The login and welcome-announcement screenshots below are historical baseline captures from before their localization patch; they are retained to record the gap that prompted the work.
 
 ## Account menu and language selection
 
