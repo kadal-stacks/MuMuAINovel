@@ -79,7 +79,7 @@ export default function AuthCallback() {
       } catch (error) {
         console.error('登录失败:', error);
         setStatus('error');
-        setErrorMessage(t('auth.loginFailed'));
+        setErrorMessage(i18n.t('auth.loginFailed'));
       }
     };
 
