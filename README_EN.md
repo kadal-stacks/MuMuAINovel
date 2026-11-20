@@ -446,8 +446,11 @@ MuMuAINovel/
 
 ### Fork Development Notes
 
-- Added an i18n foundation with per-user interface-language preferences.
-- The current translation sweep covers the project workspace dashboard and global footer; other modules are being localized progressively.
+- Added an i18n foundation with per-user interface-language preferences for Bahasa Indonesia, English, and Simplified Chinese.
+- The project workspace dashboard, project-list interactions, relative dates, and global footer are localized in all three supported interface languages.
+- The workspace header and account profile card preserve readable name and role labels when longer translations are active.
+- Interface language remains independent from novel content and AI generation prompts.
+- Translation is still in progress: the login page, welcome announcement, and other modules may still contain Chinese text. See [Interface Localization Progress](docs/I18N_PROGRESS.md) for current coverage and validation notes.
 
 ### v1.2.x - Foundation Enhancement
 
