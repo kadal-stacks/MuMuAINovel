@@ -159,6 +159,8 @@ export default function UserMenu() {
             display: 'flex',
             alignItems: 'center',
             gap: 12,
+            flexShrink: 0,
+            minWidth: 'max-content',
             padding: '8px 16px',
             background: 'rgba(255, 255, 255, 0.6)',
             backdropFilter: 'blur(10px)',
@@ -209,11 +211,16 @@ export default function UserMenu() {
               </div>
             )}
           </div>
-          <Space direction="vertical" size={0} style={{ display: window.innerWidth <= 768 ? 'none' : 'flex' }}>
+          <Space direction="vertical" size={0} style={{
+            display: window.innerWidth <= 768 ? 'none' : 'flex',
+            flexShrink: 0,
+            minWidth: 'max-content',
+          }}>
             <Text strong style={{
               color: 'var(--color-text-primary)',
               fontSize: 14,
               lineHeight: '20px',
+              whiteSpace: 'nowrap',
             }}>
               {currentUser.display_name || currentUser.username}
             </Text>
@@ -221,6 +228,7 @@ export default function UserMenu() {
               color: 'var(--color-text-secondary)',
               fontSize: 12,
               lineHeight: '18px',
+              whiteSpace: 'nowrap',
             }}>
               {currentUser.is_admin
                 ? '👑 ' + t('userMenu.administrator')
