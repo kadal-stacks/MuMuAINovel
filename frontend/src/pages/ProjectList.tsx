@@ -423,7 +423,7 @@ export default function ProjectList() {
               pointerEvents: 'none'
             }} />
             <Row align="middle" justify="space-between" gutter={[16, 16]} style={{ position: 'relative', zIndex: 1 }}>
-              <Col xs={24} sm={12} md={10}>
+              <Col xs={24} sm={12} md={9}>
                 <Space direction="vertical" size={8}>
                   <Title level={window.innerWidth <= 768 ? 3 : 2} style={{ margin: 0, color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                     <FireOutlined style={{ color: 'rgba(255,255,255,0.9)', marginRight: 12 }} />
@@ -434,7 +434,7 @@ export default function ProjectList() {
                   </Text>
                 </Space>
               </Col>
-              <Col xs={24} sm={12} md={14}>
+              <Col xs={24} sm={12} md={15}>
                 {window.innerWidth <= 768 ? (
                   // 移动端：优化布局
                   <Space direction="vertical" size={8} style={{ width: '100%' }}>
